@@ -1,8 +1,7 @@
-import React from "react"
-import data from "../../../backend/data"
+import React, {useEffect, useState} from "react"
 import Rating from "../components/Rating";
 import {Link} from "react-router-dom";
-
+import data from "../data"
 function ProductScreen(props) {
     const product = data.products.find(x=>x._id === props.match.params.id)
     if (!product){
