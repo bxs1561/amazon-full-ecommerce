@@ -1,0 +1,23 @@
+{
+  "name": "amazon-mern",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bxs1561/amazon-full-ecommerce.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bxs1561/amazon-full-ecommerce/issues"
+  },
+  "homepage": "https://github.com/bxs1561/amazon-full-ecommerce#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
