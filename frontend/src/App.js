@@ -1,9 +1,7 @@
 import React from 'react';
 import "./index.css"
-import Product from "./components/Product";
 import {
     BrowserRouter as Router,
-    Switch,
     Route,
     Link
 } from "react-router-dom";

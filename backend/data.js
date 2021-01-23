@@ -16,7 +16,6 @@ const data = {
     ],
     products:[
         {
-            _id: '1',
             name: 'Nike Shirt',
             category: 'Shirts',
             image: "https://s3.gsxtr.com/i/pr/t-shirt-nike-nsw-hybrid-tape-t-shirt-white-252045-450-1.jpg",
@@ -28,7 +27,6 @@ const data = {
             description: "super quality product"
         },
         {
-            _id: '2',
             name: 'Adidas Shirt',
             category: 'Shirts',
             image: "https://di2ponv0v5otw.cloudfront.net/posts/2018/08/23/5b7ed397c54de35724b71232/m_5b805fc64cdc305203b76046.jpg",
@@ -40,7 +38,6 @@ const data = {
             description: "super quality product"
         },
         {
-            _id: '3',
             name: 'Lacoste Shirt',
             category: 'Shirts',
             image: "https://www.coltortiboutique.com/media/catalog/product/cache/06764c7e561f871da5967ecc153c7d6c/s/h/shirts_lacoste_celeste_201697ucw000001-1zz-3.jpg",
@@ -52,7 +49,6 @@ const data = {
             description: "super quality product"
         },
         {
-            _id: '4',
             name: 'Nike Pants',
             category: 'Pants',
             image: "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/lkbggof4a7v3ubldxdqt/flex-mens-slim-fit-5-pocket-golf-pants-OnTre3XK.jpg",
@@ -64,7 +60,6 @@ const data = {
             description: "super quality product"
         },
         {
-            _id: '5',
             name: 'Puma Pants',
             category: 'Pants',
             image: "https://i.ebayimg.com/images/g/KikAAOSw789fWTR5/s-l640.jpg",
@@ -76,7 +71,7 @@ const data = {
             description: "super quality product"
         },
         {
-            _id: '6',
+            // _id: '6',
             name: 'Adidas Pant',
             category: 'Pants',
             image: "https://assets.adidas.com/images/w_600,f_auto,q_auto/e7ae42b5c34e438f95e7ab0b00c6c94d_9366/High-Waisted_Slim_Pants_Black_FI6728_21_model.jpg",
