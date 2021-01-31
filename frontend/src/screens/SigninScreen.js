@@ -8,11 +8,11 @@ import MessageBox from "../components/MessageBox";
 function SigninScreen(props) {
     const[email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const dispatch = useDispatch();
+    const redirect = props.location.search? props.location.search.split("=")[1] : "/";
     const userSignin = useSelector(state=>state.userSignin);
     const {userInfo, loading, error} = userSignin;
 
-    const dispatch = useDispatch();
-    const redirect = props.location.search? props.location.search.split("=")[1] : "/";
     const submitHandler =(e)=>{
         e.preventDefault();
         dispatch(signin(email, password))
@@ -60,7 +60,7 @@ function SigninScreen(props) {
                    <label/>
                    <div>
                        New customer? {' '}
-                       <Link to="/register">Create account</Link>
+                       <Link to={`/register?redirect=${redirect}`}>Create account</Link>
                    </div>
                 </div>
             </form>
