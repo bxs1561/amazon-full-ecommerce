@@ -157,7 +157,7 @@ img.large{
   padding: 1rem;
 }
 /** below means all child of card-body*/
-.card-body>*{
+.card-body > *{
   margin-bottom: 0.5rem;
 }
 .price{
