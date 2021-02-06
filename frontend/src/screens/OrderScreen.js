@@ -1,38 +1,57 @@
-import React, {useEffect} from "react";
-import CheckoutSteps from "../components/CheckoutSteps";
+import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {Link} from "react-router-dom";
-import {createOrder} from "../actions/orderActions";
-import {ORDER_CREATE_RESET} from "../constants/orderConstants";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
+import {detailsOrder} from "../actions/orderActions";
+import axios from "axios";
+import { PayPalButton } from "react-paypal-button-v2";
 
 
-function PlaceOrderScreen(props){
-    const cart = useSelector(state=>state.cart);
-    if(!cart.paymentMethod){
-        props.history.push("/payment")
-    }
-    const orderCreate = useSelector(state=>state.orderCreate);
-    const {loading, success, error, order} = orderCreate;
+function OrderScreen(props){
+    const orderId = props.match.params.id;
+    const [sdkReady, setSdkReady] = useState(false)
+    const orderDetails = useSelector(state=>state.orderDetails);
+    const{order,loading,error} = orderDetails;
     const toPrice = (num)=>Number(num.toFixed(2)); //convert 6.123 => 6.12
-    cart.itemsPrice = toPrice(cart.cartItems.reduce((a,c)=>a+c.qty * c.price, 0));
-    cart.shippingPrice = cart.cartItems > 100? toPrice(0): toPrice(10);
-    cart.taxPrice = toPrice(0.15 * cart.itemsPrice);
-    cart.totalPrice = cart.itemsPrice + cart.shippingPrice + cart.taxPrice;
     const dispatch = useDispatch();
-    const placeOrderHandler=(e)=>{
-        dispatch(createOrder({...cart, orderItems: cart.cartItems}))
-    };
+    console.log(order)
+
     useEffect(()=>{
-        if(success){
-            props.history.push(`/order/${order._id}`);
-            dispatch({type: ORDER_CREATE_RESET})
+        const addPayPalScript = async ()=>{
+            const {data} = await axios.get("/api/config/paypal");
+            const script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = `https://www.paypal.com/sdk/js?client-id=${data}`
+            script.async = true;
+            script.onload = ()=>{
+                setSdkReady(true)
+            };
+            document.body.appendChild(script)
+        };
+        if(!order._id){
+            dispatch(detailsOrder(orderId))
         }
-    },[dispatch, order,props.history,success]);
-    return(
+        else{
+            if(!order.isPaid){
+                if(!window.paypal){
+                    addPayPalScript()
+                }
+                else{
+                    setSdkReady(true)
+                }
+            }
+        }
+    },[dispatch, order, sdkReady,orderId]);
+    const successPaymentHandler =()=>{
+
+    }
+    return loading?(<LoadingBox/>):
+        error?(<MessageBox variant="danger">{error}</MessageBox>)
+            :
+        (
         <div>
-            <CheckoutSteps step1 step2 step3 step4></CheckoutSteps>
+            <h1>Order {order._id}</h1>
             <div className="row top">
                 <div className="col-2">
                     <ul>
@@ -40,22 +59,29 @@ function PlaceOrderScreen(props){
                             <div className="card card-body">
                                 <h2>Shipping</h2>
                                 <p><strong>Name:</strong>
-                                    {cart.shippingAddress.fullName}
+                                    {order.shippingAddress.fullName}
                                     <br/>
                                     <strong>Address</strong>
-                                    {cart.shippingAddress.address},
-                                    {cart.shippingAddress.city},{cart.shippingAddress.postalCode},
-                                    {cart.shippingAddress.country}
+                                    {order.shippingAddress.address},
+                                    {order.shippingAddress.city},{order.shippingAddress.postalCode},
+                                    {order.shippingAddress.country}
                                 </p>
-
+                                {order.isDelivered? (<MessageBox variant="success">Delivered at {order.deliveredAt}</MessageBox>
+                                    ):(
+                                    <MessageBox variant="danger">Not Delivered</MessageBox>
+                                )}
                             </div>
                         </li>
                         <li>
                             <div className="card card-body">
                                 <h2>Payment</h2>
                                 <p><strong>Method:</strong>
-                                    {cart.paymentMethod}<br/>
+                                    {order.paymentMethod}<br/>
                                 </p>
+                                {order.isPaid? (<MessageBox variant="success">Paid at {order.paidAt}</MessageBox>
+                                ):(
+                                    <MessageBox variant="danger">Not Paid</MessageBox>
+                                )}
 
                             </div>
                         </li>
@@ -64,7 +90,7 @@ function PlaceOrderScreen(props){
                                 <h2>Order Items</h2>
                                 <ul>
                                     {
-                                        cart.cartItems.map(item=>(
+                                        order.orderItems.map(item=>(
                                             <li key={item.product}>
                                                 <div className="row">
                                                     <div>
@@ -101,34 +127,37 @@ function PlaceOrderScreen(props){
                             <li>
                                 <div className="row">
                                     <div>items</div>
-                                    <div>${cart.itemsPrice}</div>
+                                    <div>${order.itemsPrice}</div>
                                 </div>
                             </li>
                             <li>
                                 <div className="row">
                                     <div>Shipping</div>
-                                    <div>${cart.shippingPrice}</div>
+                                    <div>${order.shippingPrice}</div>
                                 </div>
                             </li>
                             <li>
                                 <div className="row">
                                     <div>Tax</div>
-                                    <div>${cart.taxPrice}</div>
+                                    <div>${order.taxPrice}</div>
                                 </div>
                             </li>
                             <li>
                                 <div className="row">
                                     <div><strong>Order Total</strong></div>
-                                    <div><strong>${cart.totalPrice}</strong></div>
+                                    <div><strong>${order.totalPrice}</strong></div>
                                 </div>
                             </li>
-                            <li>
-                                <button type="button" onClick={placeOrderHandler} className="primary" disabled={cart.cartItems.length===0}>
-                                    Place Order
-                                </button>
-                            </li>
-                            {loading && <LoadingBox/>}
-                            {error && <MessageBox varient="danger">{error}</MessageBox>}
+                            {
+                                !order.isPaid && (
+                                    <li>
+                                        {!sdkReady?(<LoadingBox/>):
+                                            (
+                                                <PayPalButton amount={order.totalPrice} onSuccess={successPaymentHandler}/>
+                                            )}
+                                    </li>
+                                )
+                            }
                         </ul>
                     </div>
                 </div>
@@ -136,4 +165,4 @@ function PlaceOrderScreen(props){
         </div>
     )
 }
-export default PlaceOrderScreen
+export default OrderScreen

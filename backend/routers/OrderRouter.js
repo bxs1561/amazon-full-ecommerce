@@ -14,15 +14,25 @@ orderRouter.post("/",isAuth,expressAsyncHandler(async (req,res)=>{
             orderItems: req.body.orderItems,
             shippingAddress: req.body.shippingAddress,
             paymentMethod: req.body.paymentMethod,
-            itemsPrice: req.b.itemsPrice,
+            itemsPrice: req.body.itemsPrice,
             shippingPrice: req.body.shippingPrice,
             taxPrice: req.body.taxPrice,
             totalPrice: req.body.totalPrice,
             user: req.user._id
         });
-        const createdOrder = order.save();
-        res.status(201).send({message: "new order created", order:createdOrder})
+        const createdOrder = await order.save();
+        res.status(201).send({message: "new order created", order: createdOrder})
     }
 }));
+
+orderRouter.get("/:id",isAuth,expressAsyncHandler(async (req,res)=>{
+    const order = await Order.findById(req.params.id);
+    if(order){
+        res.send(order)
+    }
+    else{
+        res.status(404).send({message: "order not found"})
+    }
+}))
 export default orderRouter
 
